@@ -16,6 +16,12 @@ def addPh2L1Objects(process):
     process.l1tPh2NanoTask.add(p2L1TablesTask)
     return process
 
+### Add GTT Converted Tracks
+from PhysicsTools.L1Nano.l1tPh2GTTNanotables_cff import *
+def addPh2L1GTTObjects(process):
+    process.l1tPh2NanoTask.add(p2L1GTTTkTpTask)
+    return process
+
 #### GENERATOR INFO
 ## based on https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/NanoAOD/python/nanogen_cff.py#L2-L36
 from PhysicsTools.NanoAOD.genparticles_cff import * ## for GenParts
@@ -66,6 +72,7 @@ def addGenObjects(process):
 def addFullPh2L1Nano(process):
     addGenObjects(process)
     addPh2L1Objects(process)
+    addPh2L1GTTObjects(process)
     addPh2GTObjects(process)
 
     return process
