@@ -12,20 +12,43 @@ gttTracksTable = cms.EDProducer(
     doc = cms.string("GTT Converted Tracks storing pt and eta in place of Rinv and tanL"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
+        rInv = Var("rInv()", float, doc="rInv"),
+        pt = Var("momentum().perp()", float, doc="pt"),
+        eta = Var("eta()", float, doc="eta"),
+        phi = Var("phi()", float, doc="phi"),
+        localPhi = Var("localPhi()", float, doc="local phi"),
+        tanL = Var("tanL()", float, doc="tanL"),
+        z0 = Var("z0()", float, doc="z0"),
+        d0 = Var("d0()", float, doc="d0"),
+        trkMVA1 = Var("trkMVA1()", float, doc="track MVA1"),
+        trkMVA2 = Var("trkMVA2()", float, doc="track MVA2"),
+        trkMVA3 = Var("trkMVA3()", float, doc="track MVA3"),
+        hitPattern = Var("hitPattern()", "uint", doc="hit pattern"),
+        chi2XYRed = Var("chi2XYRed()", float, doc="chi2XYRed"),
+        chi2ZRed = Var("chi2ZRed()", float, doc="chi2ZRed"),
+        # chi2BendRed = Var("chi2BendRed()", float, doc="chi2BendRed"),
+        phiSector = Var("phiSector()", "uint", doc = "phi sector number"),
+        etaSector = Var("etaSector()", "uint", doc = "eta sector number"),
         hwValid = Var("getValidBits()", "uint", doc = "hardware vertex valid bit"),
-        hwPt = Var("getRinvBits()", "uint", doc = "hardware pt"),
-        hwEta = Var("getTanlBits()", "uint", doc = "hardware eta"),
+        hwPt = Var("getRinvBits()", "uint", doc = "hardware pt after GTT conversion"),
+        hwEta = Var("getTanlBits()", "uint", doc = "hardware eta after GTT conversion"),
         hwPhi = Var("getPhiBits()", "uint", doc = "hardware phi"),
         hwZ0 = Var("getZ0Bits()", "uint", doc = "hardware z0"),
         hwD0 = Var("getD0Bits()", "uint", doc = "hardware d0"),
         hwChi2RPhi = Var("getChi2RPhiBits()", "uint", doc = "hardware Chi2RPhi"),
         hwChi2RZ = Var("getChi2RZBits()", "uint", doc = "hardware Chi2RZ"),
-        hwBenChi2 = Var("getBendChi2Bits()", "uint", doc = "hardware BendChi2"),
+        hwBendChi2 = Var("getBendChi2Bits()", "uint", doc = "hardware BendChi2"),
         hwHitPattern = Var("getHitPatternBits()", "uint", doc = "hardware HitPattern"),
-        hwMVAQuality = Var("getMVAQualityBits()", "uint", doc = "hardware MVA Quality"),
-        hwMVAOther = Var("getMVAOtherBits()", "uint", doc = "hardware MVA Other"),
+        hwMVAQuality = Var("getMVAQualityBits()", "uint", doc = "hardware MVA Quality, corresponding to trkMVA1"),
+        hwMVAOther = Var("getMVAOtherBits()", "uint", doc = "hardware MVA Other, reserved for trkMVA2 and trkMVA3"),
      )
  )
+
+gttExtTracksTable = gttTracksTable.clone(
+    src = cms.InputTag('l1tGTTInputProducerExtended','Level1TTTracksExtendedConverted'),
+    name = cms.string("L1GTTExtTrack"),
+    doc = cms.string("GTT Extended Tracks storing pt and eta in place of Rinv and tanL"),
+)
 
 # gttTrackJetsTable = cms.EDProducer(
 #     "SimpleL1TkJetWordCandidateFlatTableProducer",
