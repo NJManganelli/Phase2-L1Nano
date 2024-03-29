@@ -1,15 +1,17 @@
 import FWCore.ParameterSet.Config as cms
 from PhysicsTools.NanoAOD.common_cff import *
 from PhysicsTools.NanoAOD.l1trig_cff import *
+from PhysicsTools.NanoAOD.globals_cff import *
+from PhysicsTools.NanoAOD.met_cff import metMCTask, metTable, tkMetTable
 
-#### GTT Converted Tracks
-gttTracksTable = cms.EDProducer(
+#### L1T + GTT Converted Tracks
+l1tTracksTable = cms.EDProducer(
     # "SimpleCandidateFlatTableProducer",
     "SimpleL1TTTrackCandidateFlatTableProducer", ## note the use of a dedicated table producer which is defined in the plugins/L1TableProducer.cc
-    src = cms.InputTag('l1tGTTInputProducer','Level1TTTracksConverted'),
+    src = cms.InputTag("l1tTTTracksFromTrackletEmulation", "Level1TTTracks"),
+    name = cms.string("L1TTrack"),
+    doc = cms.string("L1T Prompt Tracks"),
     cut = cms.string(""),
-    name = cms.string("L1GTTTrack"),
-    doc = cms.string("GTT Converted Tracks storing pt and eta in place of Rinv and tanL"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         rInv = Var("rInv()", float, doc="rInv"),
@@ -27,11 +29,12 @@ gttTracksTable = cms.EDProducer(
         chi2XYRed = Var("chi2XYRed()", float, doc="chi2XYRed"),
         chi2ZRed = Var("chi2ZRed()", float, doc="chi2ZRed"),
         # chi2BendRed = Var("chi2BendRed()", float, doc="chi2BendRed"),
+        chi2Bend = Var("stubPtConsistency()", float, doc="chi2Bend"),
         phiSector = Var("phiSector()", "uint", doc = "phi sector number"),
         etaSector = Var("etaSector()", "uint", doc = "eta sector number"),
         hwValid = Var("getValidBits()", "uint", doc = "hardware vertex valid bit"),
-        hwPt = Var("getRinvBits()", "uint", doc = "hardware pt after GTT conversion"),
-        hwEta = Var("getTanlBits()", "uint", doc = "hardware eta after GTT conversion"),
+        hwRinv = Var("getRinvBits()", "uint", doc = "hardware 1/R before GTT conversion"),
+        hwTanl = Var("getTanlBits()", "uint", doc = "hardware tanL before GTT conversion"),
         hwPhi = Var("getPhiBits()", "uint", doc = "hardware phi"),
         hwZ0 = Var("getZ0Bits()", "uint", doc = "hardware z0"),
         hwD0 = Var("getD0Bits()", "uint", doc = "hardware d0"),
@@ -42,41 +45,55 @@ gttTracksTable = cms.EDProducer(
         hwMVAQuality = Var("getMVAQualityBits()", "uint", doc = "hardware MVA Quality, corresponding to trkMVA1"),
         hwMVAOther = Var("getMVAOtherBits()", "uint", doc = "hardware MVA Other, reserved for trkMVA2 and trkMVA3"),
      )
- )
-
-gttExtTracksTable = gttTracksTable.clone(
-    src = cms.InputTag('l1tGTTInputProducerExtended','Level1TTTracksExtendedConverted'),
-    name = cms.string("L1GTTExtTrack"),
-    doc = cms.string("GTT Extended Tracks storing pt and eta in place of Rinv and tanL"),
 )
 
-# gttTrackJetsTable = cms.EDProducer(
-#     "SimpleL1TkJetWordCandidateFlatTableProducer",
-#     src = cms.InputTag("l1tGTTInputProducer","L1TrackJets"),
-#     name = cms.string("L1TrackJet"),
-#     doc = cms.string("GTT Track Jets"),
-#     singleton = cms.bool(False), # the number of entries is variable
-#     variables = cms.PSet(
-#         pt = Var("pt()", float, doc="pt"),
-#         eta = Var("glbeta()", float, doc="eta"),
-#         phi = Var("glbphi()", float, doc="phi"),
-#         z0 = Var("z0()", float, doc="z0"), 
-#         hwPt = Var("ptBits()", "uint", doc="hardware pt"),
-#         hwEta = Var("glbEtaBits()", "uint", doc="hardware eta"),
-#         hwPhi = Var("glbPhiBits()", "uint", doc="hardware eta"),
-#         hwZ0 = Var("z0Bits()", "uint", doc="hardware z0"),
-#         hwNTracks = Var("ntBits()", "uint", doc="hardware number of tracks"),
-#         hwNDisplacedTracks = Var("xtBits()", "uint", doc="hardware number of tracks"),
-#         hwDisplacedFlagBits = Var("dispFlagBits()", "uint", doc="hardware displaced flag bits"),
-#         # hwWordA = Var("tkJetWord().range(31, 0).to_uint()", "uint", doc = "hardware track jet word first 32 bits"),
-#         # hwWordB = Var("tkJetWord().range(63, 32).to_uint()", "uint", doc = "hardware track jet word second 32 bits"),
-#         # hwWordC = Var("tkJetWord().range(95, 64).to_uint()", "uint", doc = "hardware track jet word third 32 bits"),
-#         # hwWordD = Var("tkJetWord().range(127, 96).to_uint()", "uint", doc = "hardware track jet word fourth 32 bits"),
-#     )
+gttTracksTable = l1tTracksTable.clone(
+    src = cms.InputTag('l1tGTTInputProducer','Level1TTTracksConverted'),
+    extension = cms.bool(True),
+    variables = cms.PSet(
+        hwPt = Var("getRinvBits()", "uint", doc = "hardware pt after GTT conversion"),
+        hwEta = Var("getTanlBits()", "uint", doc = "hardware eta after GTT conversion"),
+        )
+)
+
+l1tExtTracksTable = l1tTracksTable.clone(
+    src = cms.InputTag("l1tTTTracksFromExtendedTrackletEmulation", "Level1TTTracks"),
+    name = cms.string("L1TExtTrack"),
+    doc = cms.string("L1T Extended Tracks"),
+)
+
+gttExtTracksTable = l1tExtTracksTable.clone(
+    src = cms.InputTag('l1tGTTInputProducerExtended','Level1TTTracksExtendedConverted'),
+    extension = cms.bool(True),
+    variables = cms.PSet(
+        hwPt = Var("getRinvBits()", "uint", doc = "hardware 1/R before GTT conversion"),
+        hwEta = Var("getTanlBits()", "uint", doc = "hardware tanL before GTT conversion"),
+        )
+)
+
+# TrackTripletsInputTag = cms.InputTag("l1tTrackTripletEmulation", "L1TrackTriplet"),
+
+# l1tTruthTracksTable = l1tTracksTable.clone(
+#     src = cms.InputTag("TTTrackAssociatorFromPixelDigis", "Level1TTTracks"),
+#     name = cms.string("L1TTruthTrack"),
+#     doc = cms.string("L1T Truth Tracks"),
 # )
 
+# l1tExtTruthTracksTable = l1tTracksTable.clone(
+#     src = cms.InputTag("TTTrackAssociatorFromPixelDigisExtended", "Level1TTTracks"),
+#     name = cms.string("L1TTruthTrack"),
+#     doc = cms.string("L1T Truth Tracks"),
+# )
 
 p2L1GTTTkTpTask = cms.Task(
+    l1tTracksTable,
     gttTracksTable,
+    l1tExtTracksTable,    
+    gttExtTracksTable,
+    globalTablesTask,
+    globalTablesMCTask,
+    metMCTask,
+    metTable,
+    tkMetTable,
 )
 
