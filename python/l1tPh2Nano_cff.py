@@ -16,7 +16,7 @@ def addPh2L1Objects(process):
     process.l1tPh2NanoTask.add(p2L1TablesTask)
     return process
 
-### Add GTT Converted Tracks
+### Add L1T Tracks for GTT Studies
 from PhysicsTools.L1Nano.l1tPh2GTTNanotables_cff import *
 def addPh2L1GTTObjects(process):
     process.l1tPh2NanoTask.add(p2L1GTTTkTpTask)
@@ -29,6 +29,7 @@ from PhysicsTools.NanoAOD.jetMC_cff import * ## for GenJets
 from PhysicsTools.NanoAOD.met_cff import metMCTable ## for GenMET
 from PhysicsTools.NanoAOD.globals_cff import puTable ## for PU
 from PhysicsTools.NanoAOD.taus_cff import * ## for Gen taus
+from PhysicsTools.NanoAOD.genVertex_cff import * ## For generator vertex
 def addGenObjects(process):
 
     ## add more GenVariables
@@ -60,7 +61,7 @@ def addGenObjects(process):
     process.l1tPh2NanoTask.add(
                 puTable, metMCTable,
                 genParticleTask, genParticleTablesTask,
-                genTauTask,
+                genTauTask, genVertexTablesTask,
     )
     
     # add all GenJets: AK4 and AK8
