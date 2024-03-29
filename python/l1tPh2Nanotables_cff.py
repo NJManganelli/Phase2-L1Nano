@@ -24,6 +24,12 @@ vtxTable = cms.EDProducer(
      )
  )
 
+nnVtxTable = vtxTable.clone(
+    src = cms.InputTag('l1tNNVertexFinderEmulator','L1VerticesEmulation'),
+    name = cms.string("L1nnVertex"),
+    doc = cms.string("GTT E2E NN Vertices"),
+    )
+
 gttTrackJetsTable = cms.EDProducer(
     "SimpleL1TkJetWordCandidateFlatTableProducer",
     src = cms.InputTag("l1tTrackJetsEmulation","L1TrackJets"),
@@ -54,6 +60,19 @@ gttExtTrackJetsTable = gttTrackJetsTable.clone(
     name = cms.string("L1ExtTrackJet"),
     doc = cms.string("GTT Extended Track Jets"),
 )
+
+# Need table producer for TkJet type https://github.com/cms-l1t-offline/cmssw/blob/02a8ce8104613af7b2cc57d3b1226173916af87e/DataFormats/L1TCorrelator/interface/TkJet.h#L4
+# gttTrackFastJetsTable = gttTrackJetsTable.clone(
+#     src = cms.InputTag("l1tTrackFastJets","L1TrackFastJets"),
+#     name = cms.string("L1TrackFastJet"),
+#     doc = cms.string("GTT Track Fast Jets"),
+# )
+
+# gttExtTrackFastJetsTable = gttTrackFastJetsTable.clone(
+#     src = cms.InputTag("l1tTrackFastJetsExtended","L1TrackFastJetsExtended"),
+#     name = cms.string("L1ExtTrackFastJet"),
+#     doc = cms.string("GTT Extended Track Fast Jets"),
+# )   
 
 gttEtSumTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
@@ -431,9 +450,12 @@ p2L1TablesTask = cms.Task(
     hpsTauTable,
     # GTT
     vtxTable,
+    nnVtxTable,
     pvtxTable,
     gttTrackJetsTable,
     gttExtTrackJetsTable,
+    # gttTrackFastJetsTable,
+    # gttExtTrackFastJetsTable,
     gttEtSumTable,
     gttHtSumTable,
 )
